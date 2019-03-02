@@ -64,6 +64,12 @@
     <Build Include="Tables\PrecinctAdjacency.sql" />
     <Build Include="Tables\PrecinctAdjacencyType.sql" />
     <Build Include="Tables\PrecinctAdjacencyPrecinctAdjacencyType.sql" />
+    <Build Include="Tables\ElectionResults.sql" />
+    <Build Include="Tables\PrecinctDistrict.sql" />
+    <Build Include="Tables\District.sql" />
+    <Build Include="Tables\Population.sql" />
+    <Build Include="Tables\DemographicTypePopulation.sql" />
+    <Build Include="Tables\DemographicType.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="PoliDB.refactorlog" />

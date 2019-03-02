@@ -35,4 +35,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[FK_PrecinctAdjacencyPrecinctAdjacencyType_PrecinctAdjacencyType]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a1c01967-2de3-48e9-b5b6-e7cb63b65847" ChangeDateTime="03/02/2019 20:19:19">
+    <Property Name="ElementName" Value="[dbo].[Precinct].[Descripyion]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Precinct]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Description" />
+  </Operation>
 </Operations>
