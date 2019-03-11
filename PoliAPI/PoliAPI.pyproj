@@ -30,6 +30,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api\admin.py" />
+    <Compile Include="api\apps.py" />
+    <Compile Include="api\migrations\__init__.py" />
+    <Compile Include="api\models.py" />
+    <Compile Include="api\tests.py" />
+    <Compile Include="api\views.py" />
+    <Compile Include="api\__init__.py" />
     <Compile Include="manage.py" />
     <Compile Include="PoliAPI\__init__.py" />
     <Compile Include="PoliAPI\settings.py" />
@@ -40,6 +47,8 @@
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="api\" />
+    <Folder Include="api\migrations\" />
     <Folder Include="PoliAPI\" />
   </ItemGroup>
   <ItemGroup>
