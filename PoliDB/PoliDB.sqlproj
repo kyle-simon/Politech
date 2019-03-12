@@ -67,9 +67,10 @@
     <Build Include="Tables\ElectionResults.sql" />
     <Build Include="Tables\PrecinctDistrict.sql" />
     <Build Include="Tables\District.sql" />
-    <Build Include="Tables\Population.sql" />
-    <Build Include="Tables\DemographicTypePopulation.sql" />
+    <Build Include="Tables\Demographic.sql" />
+    <Build Include="Tables\DemographicTypeDemographic.sql" />
     <Build Include="Tables\DemographicType.sql" />
+    <Build Include="Tables\EconomicData.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="PoliDB.refactorlog" />
