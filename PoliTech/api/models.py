@@ -12,6 +12,8 @@ class Precinct(models.Model):
     description = models.CharField(max_length=200)
     adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
     # The + after related_to is required, it makes it so Django will not expose the backwards relationship
+    # Adjacency is a symmetric relationship but Django doesn't support symmetric relationships with a through table
+    # So we must create these helper methods to properly expose a symmetric-like way to interact with our Precinct records
     def add_adjacency(self, precinct, sym = True):
         adjacency, created = Adjacency.objects.get_or_create(from_precinct=self, to_precinct=precinct)
 
@@ -43,7 +45,7 @@ class Adjacency(models.Model):
     def add_adjacency_type(self, type, sym=True):
         self.adjacency_types.add(type)
         if sym:
-            Adjacency.objects.filter(from_precinct=self.to_precinct, to_precinct=self)[0].add_adjacency_type(type, False)
+            Adjacency.objects.get(from_precinct=self.to_precinct, to_precinct=self).add_adjacency_type(type, False)
 
     class Meta:
         index_together = [
