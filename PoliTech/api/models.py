@@ -12,9 +12,6 @@ class Precinct(models.Model):
     description = models.CharField(max_length=200)
     adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
     # The + after related_to is required, it makes it so Django will not expose the backwards relationship
-    # While the adjacency relation is symmetric, Django doesn't support symmetric relations with a through table, so we have to add some
-    # helper methods to make it behave like a symmetric relationship
-
     def add_adjacency(self, precinct, sym = True):
         adjacency, created = Adjacency.objects.get_or_create(from_precinct=self, to_precinct=precinct)
 
