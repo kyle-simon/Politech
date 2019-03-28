@@ -80,7 +80,11 @@ WSGI_APPLICATION = 'PoliAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.path.join(BASE_DIR, 'mysql.db'),
+        'NAME': 'testDB',
+        'USER': 'root',
+        'PASSWORD': 'password',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
     }
 }
 
