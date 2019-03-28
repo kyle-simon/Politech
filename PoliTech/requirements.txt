@@ -1,5 +1,5 @@
-Django==1.11.20
-django-tastypie==0.14.2
+Django==2.1.7
+djangorestframework==3.9.2
 pip==10.0.1
 python-dateutil==2.8.0
 python-mimeparse==1.6.0
