@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import posixpath
+import dj_database_url
+
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -77,17 +80,15 @@ WSGI_APPLICATION = 'PoliAPI.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testDB',
-        'USER': 'root',
-        'PASSWORD': 'password',
-        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
-        'PORT': '3306',
-    }
-}
+DATABASES = { }
 
+DATABASES['default'] = dj_database_url.config(default='mysql://...')
+DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.mysql'
+DATABASES['default']['NAME'] = 'PoliDB'
+DATABASES['default']['USER'] = 'root'
+DATABASES['default']['PASSWORD'] = 'password'
+DATABASES['default']['HOST'] = 'localhost'
+DATABASES['default']['PORT'] = '3306'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
