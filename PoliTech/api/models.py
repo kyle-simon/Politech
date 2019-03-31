@@ -13,8 +13,8 @@ class Precinct(models.Model):
     description = models.CharField(max_length=200)
     adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
 
-    # class Meta:
-    #     index_together = ("sequence", "stock")
+    class Meta:
+        index_together = [("state", "description")]
     # The + after related_to is required, it makes it so Django will not expose the backwards relationship
     # Adjacency is a symmetric relationship but Django doesn't support symmetric relationships with a through table
     # So we must create these helper methods to properly expose a symmetric-like way to interact with our Precinct records
@@ -70,7 +70,7 @@ class Demographic(models.Model):
         ]
 
 
-class DemographicTypePopulation:
+class DemographicTypePopulation(models.Model):
     demographic = models.ForeignKey(Demographic, on_delete=models.PROTECT)
     demographic_type = models.ForeignKey(DemographicType, on_delete=models.PROTECT)
     population = models.IntegerField()
