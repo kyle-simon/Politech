@@ -1,5 +1,5 @@
 """
-Definition of urls for PoliAPI.
+Definition of urls for PoliTech.
 """
 
 from django.conf.urls import include, url
@@ -10,8 +10,8 @@ from django.conf.urls import include, url
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', PoliAPI.views.home, name='home'),
-    # url(r'^PoliAPI/', include('PoliAPI.PoliAPI.urls')),
+    # url(r'^$', PoliTech.views.home, name='home'),
+    # url(r'^PoliTech/', include('PoliTech.PoliTech.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
