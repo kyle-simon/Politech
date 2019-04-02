@@ -1,101 +1,28 @@
 from rest_framework import serializers
 from django.contrib.gis.db import models
-from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from rest_framework_gis.fields import GeometryField
 from api.models import *
 
 
-class PrecinctSerializer(serializers.Serializer):
-    precinct_shape = models.PolygonField(geography=True)  # 4386 corresponds to the World Geodetic System coordinates
-    state = serializers.CharField(max_length=2)
-    description = serializers.CharField(max_length=200)
-    adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
+class PrecinctSerializer(serializers.ModelSerializer):
+    adjacencies = AdjacencySerializer(many=true, read_only=true)
 
     class Meta:
-        index_together = [("state", "description")]
-        # The + after related_to is required, it makes it so Django will not expose the backwards relationship
-        # Adjacency is a symmetric relationship but Django doesn't support symmetric relationships with a through table
-        # So we must create these helper methods to properly expose a symmetric-like way to interact with our Precinct records
-
-    def add_adjacency(self, precinct, sym=True):
-        adjacency, created = Adjacency.objects.get_or_create(from_precinct=self, to_precinct=precinct)
-
-        if sym:
-            precinct.add_adjacency(self, False)
-
-        return adjacency
-
-    def remove_adjacency(self, precinct, sym=True):
-        Adjacency.objects.filter(from_precinct=self, to_precinct=precinct).delete()
-
-        if sym:
-            precinct.remove_relationship(self, False)
-
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return Precinct.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.precinct_shape = validated_data.get('precinct_shape', instance.precinct_shape)
-        instance.state = validated_data.get('state', instance.state)
-        instance.description = validated_data.get('description', instance.description)
-        instance.adjacencies = validated_data.get('adjacencies', instance.adjacencies)
-        instance.save()
-        return instance
+        model = Precinct
+        fields = ('precinct_shape', 'state', 'description', 'adjacencies')
 
 
-class AdjacencyTypeSerializer(serializers.Serializer):
-    description = serializers.CharField(max_length=200)
-
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return AdjacencyType.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.description = validated_data.get('description', instance.description)
-        instance.save()
-        return instance
-
-
-class AdjacencySerializer(serializers.Serializer):
-    from_precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT, related_name='from_precincts')
-    to_precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT, related_name='to_precincts')
-    adjacency_types = serializers.ManyToManyField(AdjacencyType)
-
-    def add_adjacency_type(self, type, sym=True):
-        self.adjacency_types.add(type)
-        if sym:
-            Adjacency.objects.get(from_precinct=self.to_precinct, to_precinct=self).add_adjacency_type(type, False)
-
+class AdjacencyTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        index_together = [
-            ("from_precinct", "to_precinct")
-        ]
+        model = AdjacencyType
+        fields = ('description')
 
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return Adjacency.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.from_precinct = validated_data.get('from_precinct', instance.from_precinct)
-        instance.to_precinct = validated_data.get('to_precinct', to_precinct.state)
-        instance.adjacency_types = validated_data.get('adjacency_types', instance.adjacency_types)
-        instance.save()
-        return instance
+class AdjacencySerializer(serializers.ModelSerializer):
+    adjacency_types = AdjacencyTypeSerializer(many = true, read_only=true)
+    class Meta:
+        model = Adjacency
+        fields = ('adjacency_types')
 
 
 class DemographicTypeSerializer(serializers.Serializer):

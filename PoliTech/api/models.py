@@ -8,7 +8,7 @@ from django.contrib.gis.db import models
 #  last_name = models.CharField(max_length=30)
 
 class Precinct(models.Model):
-    precinct_shape = models.PolygonField(geography=True)  # 4386 corresponds to the World Geodetic System coordinates
+    precinct_shape = models.MultiPolygonField(geography=True)  # 4386 corresponds to the World Geodetic System coordinates
     state = models.CharField(max_length=2)
     description = models.CharField(max_length=200)
     adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
