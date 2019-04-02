@@ -25,48 +25,19 @@ class AdjacencySerializer(serializers.ModelSerializer):
         fields = ('adjacency_types')
 
 
-class DemographicTypeSerializer(serializers.Serializer):
-    description = serializers.CharField(max_length=200)
-
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return DemographicType.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.description = validated_data.get('description', instance.description)
-        instance.save()
-        return instance
+class DemographicTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DemographicType
+        fields = ('description')
 
 
-class DemographicSerializer(serializers.Serializer):
-    contains_representative = serializers.BooleanField(null=True, blank=True)
-    year = serializers.DateField()
-    total_population = serializers.IntegerField(null=True, blank=True)
-    precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
-    demographic_types = serializers.ManyToManyField(DemographicType, through='DemographicTypePopulation')
+class DemographicSerializer(serializers.ModelSerializer):
+    precinct = serializers.PrimaryKeyRelatedField(read_only=true)
+    demographic_types = DemographicTypeSerializer(many = true, read_only=true)
 
-    def create(self, validated_data):
-        """
-        Create and return a new `Snippet` instance, given the validated data.
-        """
-        return Demographic.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Snippet` instance, given the validated data.
-        """
-        instance.contains_representative = validated_data.get('contains_representative', instance.contains_representative)
-        instance.year = validated_data.get('year', instance.year)
-        instance.total_population = validated_data.get('total_population', instance.total_population)
-        instance.precinct = validated_data.get('precinct', instance.precinct)
-        instance.demographic_types = validated_data.get('demographic_types', instance.demographic_types)
-        instance.save()
-        return instance
+    class Meta:
+        model = Demographic
+        fields = ('contains_representative', 'year', 'total_population', 'precinct', 'demographic_types')
 
 
 class DemographicTypePopulationSerializer(serializers.Serializer):

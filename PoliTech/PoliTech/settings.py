@@ -144,4 +144,3 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = posixpath.join(*(BASE_DIR.split(os.path.sep) + ['static']))
 
-GDAL_LIBRARY_PATH = r'C:\OSGeo4W64\bin\gdal204.dll'
