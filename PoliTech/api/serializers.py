@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.gis.db import models
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from api.models import *
+from PoliTech.api.models import *
 
 
 class PrecinctSerializer(serializers.Serializer):
