@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
-from api.models import *
+from PoliTech.api.models import *
 
 
 class AdjacencyTypeSerializer(serializers.ModelSerializer):
