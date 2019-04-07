@@ -52,7 +52,7 @@ class DemographicTypePopulationSerializer(serializers.ModelSerializer):
         fields = ('demographic', 'demographic_type', 'population')
 
 
-class EconomicDataSerializer(serializers.Serializer):
+class EconomicDataSerializer(serializers.ModelSerializer):
     # gdp_per_capita = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # median_income = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # year = serializers.DateField()
@@ -64,14 +64,14 @@ class EconomicDataSerializer(serializers.Serializer):
         fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
 
 
-class PoliticalPartySerializer(serializers.Serializer):
+class PoliticalPartySerializer(serializers.NodelSerializer):
     # description = serializers.CharField(max_length=100)
     class Meta:
         model = PoliticalParty
         fields = ('description')
 
 
-class ElectionResultSerializer(serializers.Serializer):
+class ElectionResultSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # votes = serializers.ManyToManyField(PoliticalParty, through='VoteCount')
     precinct = PrecinctSerializer(read_only=True)
@@ -83,7 +83,7 @@ class ElectionResultSerializer(serializers.Serializer):
 
 
 
-class VoteCountSerializer(serializers.Serializer):
+class VoteCountSerializer(serializers.ModelSerializer):
     # election_result = serializers.ForeignKey(ElectionResult, on_delete=models.PROTECT)
     # political_party = serializers.ForeignKey(PoliticalParty, on_delete=models.PROTECT)
     # num_votes = serializers.IntegerField()
@@ -96,7 +96,7 @@ class VoteCountSerializer(serializers.Serializer):
 
 
 
-class DistrictSerializer(serializers.Serializer):
+class DistrictSerializer(serializers.ModelSerializer):
     # state = serializers.CharField(max_length=2)
     # description = serializers.CharField(max_length=200)
     # precincts = serializers.ManyToManyField(Precinct, through='DistrictMembership')
@@ -107,7 +107,7 @@ class DistrictSerializer(serializers.Serializer):
         fields = ('state','description','precincts')
 
 
-class DistrictMembershipSerializer(serializers.Serializer):
+class DistrictMembershipSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # district = serializers.ForeignKey(District, on_delete=models.PROTECT)
     # from_year = serializers.DateField()

@@ -1,17 +1,20 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics
-from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from rest_framework.decorators import action
 from .models import District
 from .serializers import DistrictSerializer
 from django.http import JsonResponse
 from PoliTech.api.serializers import *
+from datetime import date
+from django.db.models import Q
 
 # @api_view()
 # def getState(state, year):
 
 
-class EconomicListCreateView(generics.ListCreateAPIView):
+class EconomicListView(generics.ListCreateAPIView):
     queryset = EconomicData.objects.all()
     serializer_class = EconomicDataSerializer
 
@@ -22,7 +25,7 @@ class EconomicListCreateView(generics.ListCreateAPIView):
         read_serializer = EconomicDataSerializer(instance)
         return JsonResponse(read_serializer.data)
 
-class VoteCountCreateView(generics.ListCreateAPIView):
+class VoteCountView(generics.ListCreateAPIView):
     queryset = VoteCount.objects.all()
     serializer_class = VoteCountSerializer
 
@@ -34,6 +37,17 @@ class VoteCountCreateView(generics.ListCreateAPIView):
         read_serializer = VoteCountSerializer(instance)
 
         return JsonResponse(read_serializer.data)
+
+class DistrictViewSet(viewsets.ModelViewset):
+    queryset = District.objects.all()
+    serializer_class = DistrictSerializer
+
+    @action(detail=True, methods=['get'])
+    def get_state(self, request, state, year=date.today()):
+        districts_in_state = District.objects.filter(Q(state=state) 
+                                                    & Q(precincts__DistrictMembership__from_year__gte=year) 
+                                                    & (Q(precincts__DistrictMembership__to_year__lt=year) | Q(precincts__DistrictMembership__to_year__isnull=True)))
+        # need to write serializer
 
 # class DistrictCreateView(generics.ListCreateAPIView):
 #     queryset = District.objects.all()
