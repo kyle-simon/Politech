@@ -64,7 +64,7 @@ class EconomicDataSerializer(serializers.Serializer):
         fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
 
 
-class PoliticalPartySerealizer(serializers.Serializer):
+class PoliticalPartySerializer(serializers.Serializer):
     # description = serializers.CharField(max_length=100)
     class Meta:
         model = PoliticalParty
@@ -75,7 +75,7 @@ class ElectionResultSerializer(serializers.Serializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # votes = serializers.ManyToManyField(PoliticalParty, through='VoteCount')
     precinct = PrecinctSerializer(read_only=True)
-    votes = PoliticalPartySerealizer(many=True, read_only=True)
+    votes = PoliticalPartySerializer(many=True, read_only=True)
 
     class Meta:
         model = ElectionResult
@@ -88,7 +88,7 @@ class VoteCountSerializer(serializers.Serializer):
     # political_party = serializers.ForeignKey(PoliticalParty, on_delete=models.PROTECT)
     # num_votes = serializers.IntegerField()
     election_result = ElectionResultSerializer(read_only=True)
-    political_party = PoliticalPartySerealizer(read_only=True)
+    political_party = PoliticalPartySerializer(read_only=True)
 
     class Meta:
         model = VoteCount
