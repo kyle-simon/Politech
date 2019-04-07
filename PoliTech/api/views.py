@@ -17,6 +17,19 @@ class EconomicListCreateView(generics.ListCreateAPIView):
         read_serializer = EconomicDataSerializer(instance)
         return JsonResponse(read_serializer.data)
 
+class VoteCountCreateView(generics.ListCreateAPIView):
+    queryset = VoteCount.objects.all()
+    serializer_class = VoteCountSerializer
+
+    def create(self, request, *args, **kwargs):
+        write_serializer = VoteCountSerializer(data=request.data)
+        write_serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(write_serializer)
+
+        read_serializer = VoteCountSerializer(instance)
+
+        return JsonResponse(read_serializer.data)
+
 # class DistrictCreateView(generics.ListCreateAPIView):
 #     queryset = District.objects.all()
 #     serializer_class = DistrictSerializer
@@ -81,20 +94,6 @@ class EconomicListCreateView(generics.ListCreateAPIView):
 #         write_serializer.is_valid(raise_exception=True)
 #         instance = self.perform_create(write_serializer)
 #         read_serializer = PrecinctSerializer(instance)
-
-class VoteCountCreateView(generics.ListCreateAPIVIEW):
-    queryset = VoteCount.objects.all()
-    serializer_class = VoteCountSerializer
-
-    def create(self, request):
-        write_serializer = VoteCountSerializer(data=request.data)
-        write_serializer.is_valid(raise_exception=True)
-        instance = self.perform_create(write_serializer)
-
-        read_serializer = VoteCountSerializer(instance)
-
-        return JsonResponse(read_serializer.data)
-
 #
 # class districtCreateView(generics.ListCreateAPIVIEW):
 #     queryset = District.objects.all()
@@ -104,12 +103,8 @@ class VoteCountCreateView(generics.ListCreateAPIVIEW):
 #         write_serializer = DistrictSerializer(data=request.data)
 #         write_serializer.is_valid(raise_exception=True)
 #         instance = self.perform_create(write_serializer)
-#
 #         read_serializer = DistrictSerializer(instance)
-#
 #         return JsonResponse(read_serializer.data)
-#
-#
 #
 # class DemographicTypePopulationCreateView(generics.ListCreateAPIVIEW):
 #     queryset = DemographicTypePopulation.objects.all()
@@ -119,13 +114,8 @@ class VoteCountCreateView(generics.ListCreateAPIVIEW):
 #         write_serializer = DemographicTypePopulationSerializer(data=request.data)
 #         write_serializer.is_valid(raise_exception=True)
 #         instance = self.perform_create(write_serializer)
-#
 #         read_serializer = DemographicTypePopulationSerializer(instance)
-#
 #         return JsonResponse(read_serializer.data)
-
-
-#
 #
 # class PoliticalPartyCreateView(generics.ListCreateAPIVIEW):
 #     queryset = PoliticalParty.objects.all()
@@ -135,12 +125,8 @@ class VoteCountCreateView(generics.ListCreateAPIVIEW):
 #         write_serializer = PoliticalPartySerializer(data=request.data)
 #         write_serializer.is_valid(raise_exception=True)
 #         instance = self.perform_create(write_serializer)
-#
 #         read_serializer = PoliticalPartySerializer(instance)
-#
 #         return JsonResponse(read_serializer.data)
-#
-#
 #
 # class ElectionResultCreateView(generics.ListCreateAPIVIEW):
 #     queryset = ElectionResult.objects.all()
@@ -150,12 +136,9 @@ class VoteCountCreateView(generics.ListCreateAPIVIEW):
 #         write_serializer = ElectionResultSerializer(data=request.data)
 #         write_serializer.is_valid(raise_exception=True)
 #         instance = self.perform_create(write_serializer)
-#
 #         read_serializer = ElectionResultSerializer(instance)
-#
 #         return JsonResponse(read_serializer.data)
-
-
+#
 # class DistrictMembershipCreateView(generics.ListCreateAPIVIEW):
 #         queryset = DistrictMembership.objects.all()
 #         serializer_class = DistrictMembershipSerializer
@@ -164,7 +147,5 @@ class VoteCountCreateView(generics.ListCreateAPIVIEW):
 #             write_serializer = DistrictMembershipSerializer(data=request.data)
 #             write_serializer.is_valid(raise_exception=True)
 #             instance = self.perform_create(write_serializer)
-#
 #             read_serializer = DistrictMembershipSerializer(instance)
-#
 #             return JsonResponse(read_serializer.data)
