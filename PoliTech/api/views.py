@@ -1,10 +1,15 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.decorators import api_view
 from .models import District
 from .serializers import DistrictSerializer
 from django.http import JsonResponse
 from PoliTech.api.serializers import *
+
+# @api_view()
+# def getState(state, year):
+
 
 class EconomicListCreateView(generics.ListCreateAPIView):
     queryset = EconomicData.objects.all()
