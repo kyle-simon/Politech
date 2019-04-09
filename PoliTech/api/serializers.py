@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
-from PoliTech.api.models import *
+from .models import *
 
 
 class AdjacencyTypeSerializer(serializers.ModelSerializer):
@@ -11,11 +11,11 @@ class AdjacencyTypeSerializer(serializers.ModelSerializer):
 
 
 class AdjacencySerializer(serializers.ModelSerializer):
-    adjacency_types = AdjacencyTypeSerializer(many = True, read_only=True)
+    from_precinct = PrecinctSerializer(read_only=True)
+    to_precinct = PrecinctSerializer(read_only=True)
     class Meta:
         model = Adjacency
-        fields = ('adjacency_types')
-
+        fields = ('from_precinct', 'to_precinct', 'adjacency_types')
 
 class PrecinctSerializer(serializers.ModelSerializer):
     adjacencies = AdjacencySerializer(many=True, read_only=True)
@@ -81,19 +81,12 @@ class ElectionResultSerializer(serializers.ModelSerializer):
         model = ElectionResult
         fields = ('election_year', 'precinct', 'votes')
 
-
-
 class VoteCountSerializer(serializers.ModelSerializer):
-    # election_result = serializers.ForeignKey(ElectionResult, on_delete=models.PROTECT)
-    # political_party = serializers.ForeignKey(PoliticalParty, on_delete=models.PROTECT)
-    # num_votes = serializers.IntegerField()
     election_result = ElectionResultSerializer(read_only=True)
     political_party = PoliticalPartySerializer(read_only=True)
-
     class Meta:
         model = VoteCount
         fields = ('election_result', 'political_party', 'num_votes')
-
 
 
 class DistrictSerializer(serializers.ModelSerializer):

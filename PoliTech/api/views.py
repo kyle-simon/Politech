@@ -3,10 +3,9 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from .models import District
-from .serializers import DistrictSerializer
+from .models import *
 from django.http import JsonResponse
-from PoliTech.api.serializers import *
+from .serializers import *
 from datetime import date
 from django.db.models import Q
 
@@ -14,36 +13,30 @@ from django.db.models import Q
 # def getState(state, year):
 
 
-class EconomicListView(generics.ListCreateAPIView):
+class EconomicViewSet(viewsets.ModelViewSet):
     queryset = EconomicData.objects.all()
     serializer_class = EconomicDataSerializer
 
-    def create(self, request, *args, **kwargs):
-        write_serializer = EconomicDataSerializer(data=request.data)
-        write_serializer.is_valid(raise_exception=True)
-        instance = self.perform_create(write_serializer)
-        read_serializer = EconomicDataSerializer(instance)
-        return JsonResponse(read_serializer.data)
 
-class VoteCountView(generics.ListCreateAPIView):
+class VoteCountViewSet(viewsets.ModelViewSet):
     queryset = VoteCount.objects.all()
     serializer_class = VoteCountSerializer
 
-    def create(self, request, *args, **kwargs):
-        write_serializer = VoteCountSerializer(data=request.data)
-        write_serializer.is_valid(raise_exception=True)
-        instance = self.perform_create(write_serializer)
 
-        read_serializer = VoteCountSerializer(instance)
+class AdjacencyViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Adjacency.objects.all()
+    serializer_class = AdjacencySerializer
 
-        return JsonResponse(read_serializer.data)
+class AdjacencyTypeViewSet(viewsets.ModelViewSet):
+    queryset = AdjacencyType.objects.all()
+    serializer_class = AdjacencyTypeSerializer
 
-class DistrictViewSet(viewsets.ModelViewset):
+class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
 
-    @action(detail=True, methods=['get'])
-    def get_state(self, request, state, year=date.today()):
+    @action(detail=True, methods=['GET'])
+    def state(self, request, state, year=date.today()):
         districts_in_state = District.objects.filter(Q(state=state) 
                                                     & Q(precincts__DistrictMembership__from_year__gte=year) 
                                                     & (Q(precincts__DistrictMembership__to_year__lt=year) | Q(precincts__DistrictMembership__to_year__isnull=True)))
