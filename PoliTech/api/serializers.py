@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
 from .models import *
+from .constants import STATES
 
 
 class AdjacencyTypeSerializer(serializers.ModelSerializer):
@@ -11,11 +12,15 @@ class AdjacencyTypeSerializer(serializers.ModelSerializer):
 
 
 class AdjacencySerializer(serializers.ModelSerializer):
-    from_precinct = PrecinctSerializer(read_only=True)
-    to_precinct = PrecinctSerializer(read_only=True)
+    adjacency_types = AdjacencyTypeSerializer(many=True, read_only=True)
     class Meta:
         model = Adjacency
         fields = ('from_precinct', 'to_precinct', 'adjacency_types')
+
+class StateSerializer(serializers.Serializer):
+    state = serializers.ChoiceField(choices=STATES, read_only=True)
+    districts = DistrictSerializer(many=true, read_only=True)
+    adjacencies = AdjacencySerializer(many=true, read_only=True)
 
 class PrecinctSerializer(serializers.ModelSerializer):
     adjacencies = AdjacencySerializer(many=True, read_only=True)
@@ -90,10 +95,8 @@ class VoteCountSerializer(serializers.ModelSerializer):
 
 
 class DistrictSerializer(serializers.ModelSerializer):
-    # state = serializers.CharField(max_length=2)
-    # description = serializers.CharField(max_length=200)
-    # precincts = serializers.ManyToManyField(Precinct, through='DistrictMembership')
     precincts = PrecinctSerializer(many=True)
+    state = serializers.ChoiceField(choices=STATES)
 
     class Meta:
         model = District

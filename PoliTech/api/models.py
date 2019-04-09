@@ -1,4 +1,4 @@
-from django.db import models as n_models
+from django.db import models as models
 from django.contrib.gis.db import models
 
 
@@ -125,3 +125,9 @@ class DistrictMembership(models.Model):
         index_together = [
             ('district', 'precinct', 'from_year')
         ]
+
+class State(object):
+    def __init__(self, state, districts, adjacencies):
+        self.state = state
+        self.districts = districts
+        self.adjacencies = adjacencies

@@ -1,16 +1,16 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-from rest_framework import generics
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from .models import *
-from django.http import JsonResponse
 from .serializers import *
 from datetime import date
-from django.db.models import Q
+from django.db.models import Q, F
+from .constants import STATES
 
 # @api_view()
 # def getState(state, year):
+
 
 
 class EconomicViewSet(viewsets.ModelViewSet):
@@ -40,6 +40,20 @@ class DistrictViewSet(viewsets.ModelViewSet):
         districts_in_state = District.objects.filter(Q(state=state) 
                                                     & Q(precincts__DistrictMembership__from_year__gte=year) 
                                                     & (Q(precincts__DistrictMembership__to_year__lt=year) | Q(precincts__DistrictMembership__to_year__isnull=True)))
+
+        precincts_in_district = districts_in_state.values('precincts')
+
+        # Only grab precinct where from_precinct < to_precinct, this will make it so we don't grab reverse relationships
+        adjacencies_in_district = Adjacency.objects.filter((Q(from_precinct__in=precincts_in_district) | Q(to_precinct__in=precincts_in_district)) 
+                                                           & Q(from_precinct__pk__lt=F('to_precinct')))
+
+        state = State(state, districts_in_state, adjacencies_in_state)
+
+        serializer = StateSerializer(state)
+
+        return JsonResponse(serializer.data)
+
+
         # need to write serializer
 
 # class DistrictCreateView(generics.ListCreateAPIView):
