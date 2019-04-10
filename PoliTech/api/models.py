@@ -10,7 +10,7 @@ from django.contrib.gis.db import models
 class Precinct(models.Model):
     precinct_shape = models.MultiPolygonField(geography=True)  # 4386 corresponds to the World Geodetic System coordinates
     state = models.CharField(max_length=2)
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, primary_key=True)
     adjacencies = models.ManyToManyField('self', through='Adjacency', symmetrical=False, related_name='related_to+')
 
     class Meta:
