@@ -111,15 +111,22 @@ class DistrictViewSet(viewsets.ModelViewSet):
 #         read_serializer = AdjacencySerializer(instance)
 #         return JsonResponse(read_serializer.data)
 #
-# class PrecinctCreateView(generics.ListCreateAPIView):
-#     queryset = Precinct.objects.all()
-#     serializer_class = Precinct
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = PrecinctSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = PrecinctSerializer(instance)
+class PrecinctCreateView(generics.ListCreateAPIView):
+    queryset = Precinct.objects.all()
+    serializer_class = Precinct
+
+    def create(self, request, *args, **kwargs):
+        write_serializer = PrecinctSerializer(data=request.data)
+        write_serializer.is_valid(raise_exception=True)
+        instance = self.perform_create(write_serializer)
+        read_serializer = PrecinctSerializer(instance)
+
+    def perform_create(self, serializer):
+        precinct = serializer.save()
+        res = Precinct.objects.filter(poly_touches=precinct)
+        for p in res:
+            precinct.add_adjacency(self, p, True)
+
 #
 # class districtCreateView(generics.ListCreateAPIVIEW):
 #     queryset = District.objects.all()
