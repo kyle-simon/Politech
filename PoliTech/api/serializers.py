@@ -3,7 +3,11 @@ from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
 from .models import *
 from .constants import STATES
-
+from rest_framework_bulk import (
+    BulkListSerializer,
+    BulkSerializerMixin,
+    ListBulkCreateUpdateDestroyAPIView,
+)
 
 class AdjacencyTypeSerializer(serializers.ModelSerializer):
     class Meta:

@@ -6,6 +6,13 @@ from .models import *
 from .serializers import *
 from datetime import date
 from django.db.models import Q, F
+
+from rest_framework_bulk import (
+    BulkListSerializer,
+    BulkSerializerMixin,
+    ListBulkCreateUpdateDestroyAPIView,
+)
+
 from .constants import STATES
 
 # @api_view()
@@ -121,11 +128,11 @@ class PrecinctCreateView(generics.ListCreateAPIView):
         instance = self.perform_create(write_serializer)
         read_serializer = PrecinctSerializer(instance)
 
-    def perform_create(self, serializer):
-        precinct = serializer.save()
-        res = Precinct.objects.filter(poly_touches=precinct)
-        for p in res:
-            precinct.add_adjacency(self, p, True)
+    # def perform_create(self, serializer):
+    #     precinct = serializer.save()
+    #     res = Precinct.objects.filter(poly_touches=precinct)
+    #     for p in res:
+    #         precinct.add_adjacency(self, p, True)
 
 #
 # class districtCreateView(generics.ListCreateAPIVIEW):
