@@ -128,11 +128,9 @@ class PrecinctCreateView(generics.ListCreateAPIView):
         instance = self.perform_create(write_serializer)
         read_serializer = PrecinctSerializer(instance)
 
-    # def perform_create(self, serializer):
-    #     precinct = serializer.save()
-    #     res = Precinct.objects.filter(poly_touches=precinct)
-    #     for p in res:
-    #         precinct.add_adjacency(self, p, True)
+
+
+
 
 #
 # class districtCreateView(generics.ListCreateAPIVIEW):

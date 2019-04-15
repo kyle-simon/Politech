@@ -9,47 +9,52 @@ from rest_framework_bulk import (
     ListBulkCreateUpdateDestroyAPIView,
 )
 
-class AdjacencyTypeSerializer(serializers.ModelSerializer):
+class AdjacencyTypeSerializer(BulkSerializerMixin, serializers.ModelSerializer):
     class Meta:
         model = AdjacencyType
+        list_serializer_class = BulkListSerializer
         fields = ('description')
 
 
-class AdjacencySerializer(serializers.ModelSerializer):
+class AdjacencySerializer(BulkSerializerMixin,serializers.ModelSerializer):
     adjacency_types = AdjacencyTypeSerializer(many=True, read_only=True)
     class Meta:
         model = Adjacency
+        list_serializer_class = BulkListSerializer
         fields = ('from_precinct', 'to_precinct', 'adjacency_types')
 
 class StateSerializer(serializers.Serializer):
     state = serializers.ChoiceField(choices=STATES, read_only=True)
-    districts = DistrictSerializer(many=true, read_only=True)
-    adjacencies = AdjacencySerializer(many=true, read_only=True)
+    districts = DistrictSerializer(many=True, read_only=True)
+    adjacencies = AdjacencySerializer(many=True, read_only=True)
 
-class PrecinctSerializer(serializers.ModelSerializer):
+class PrecinctSerializer(BulkListSerializer, serializers.ModelSerializer):
     adjacencies = AdjacencySerializer(many=True, read_only=True)
 
     class Meta:
         model = Precinct
+        list_serializer_class = BulkListSerializer
         fields = ('precinct_shape', 'state', 'description', 'adjacencies')
 
 
-class DemographicTypeSerializer(serializers.ModelSerializer):
+class DemographicTypeSerializer(BulkListSerializer, serializers.ModelSerializer):
     class Meta:
         model = DemographicType
+        list_serializer_class = BulkListSerializer
         fields = ('description')
 
 
-class DemographicSerializer(serializers.ModelSerializer):
+class DemographicSerializer(BulkListSerializer, serializers.ModelSerializer):
     precinct = serializers.PrimaryKeyRelatedField(read_only=True)
     demographic_types = DemographicTypeSerializer(many = True, read_only=True)
 
     class Meta:
         model = Demographic
+        list_serializer_class = BulkListSerializer
         fields = ('contains_representative', 'year', 'total_population', 'precinct', 'demographic_types')
 
 
-class DemographicTypePopulationSerializer(serializers.ModelSerializer):
+class DemographicTypePopulationSerializer(BulkListSerializer, serializers.ModelSerializer):
     # demographic = serializers.ForeignKey(Demographic, on_delete=models.PROTECT)
     demographic = serializers.PrimaryKeyRelatedField(read_only = True)
     # demographic_type = serializers.ForeignKey(DemographicType, on_delete=models.PROTECT)
@@ -58,10 +63,11 @@ class DemographicTypePopulationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DemographicTypePopulation
+        list_serializer_class = BulkListSerializer
         fields = ('demographic', 'demographic_type', 'population')
 
 
-class EconomicDataSerializer(serializers.ModelSerializer):
+class EconomicDataSerializer(BulkListSerializer, serializers.ModelSerializer):
     # gdp_per_capita = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # median_income = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # year = serializers.DateField()
@@ -70,6 +76,7 @@ class EconomicDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EconomicData
+        list_serializer_class = BulkListSerializer
         fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
 
 
@@ -98,16 +105,17 @@ class VoteCountSerializer(serializers.ModelSerializer):
         fields = ('election_result', 'political_party', 'num_votes')
 
 
-class DistrictSerializer(serializers.ModelSerializer):
+class DistrictSerializer(BulkListSerializer, serializers.ModelSerializer):
     precincts = PrecinctSerializer(many=True)
     state = serializers.ChoiceField(choices=STATES)
 
     class Meta:
         model = District
+        list_serializer_class = BulkListSerializer
         fields = ('state','description','precincts')
 
 
-class DistrictMembershipSerializer(serializers.ModelSerializer):
+class DistrictMembershipSerializer(BulkListSerializer, serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # district = serializers.ForeignKey(District, on_delete=models.PROTECT)
     # from_year = serializers.DateField()
@@ -116,4 +124,5 @@ class DistrictMembershipSerializer(serializers.ModelSerializer):
     district = DistrictSerializer(read_only=True)
     class Meta:
         model = DistrictMembership
+        list_serializer_class = BulkListSerializer
         fields = ('precinct', 'district', 'from_year', 'to_year')
