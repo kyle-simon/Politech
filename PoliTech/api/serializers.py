@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
 from .models import *
@@ -126,3 +127,14 @@ class DistrictMembershipSerializer(BulkListSerializer, serializers.ModelSerializ
         model = DistrictMembership
         list_serializer_class = BulkListSerializer
         fields = ('precinct', 'district', 'from_year', 'to_year')
+
+# serializers for admin panel
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name')
