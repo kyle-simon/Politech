@@ -3,6 +3,9 @@ Definition of urls for PoliTech.
 """
 
 from django.conf.urls import include, url
+from django.conf import settings
+from django.urls import path
+from django.conf.urls.static import static
 from rest_framework.authtoken import views
 
 # Uncomment the next two lines to enable the admin:
@@ -19,5 +22,7 @@ urlpatterns = [
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', admin.site.urls),
+    url(r'^api-token-auth/', views.obtain_auth_token)
     #url(r'^api-token-auth/', views.obtain_auth_token)
+
 ]
