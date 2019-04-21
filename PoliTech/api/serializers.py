@@ -19,8 +19,14 @@ class AdjacencySerializer(serializers.ModelSerializer):
 
 class StateSerializer(serializers.Serializer):
     state = serializers.ChoiceField(choices=STATES, read_only=True)
-    districts = DistrictSerializer(many=true, read_only=True)
-    adjacencies = AdjacencySerializer(many=true, read_only=True)
+    districts = DistrictSerializer(many=True, read_only=True)
+    adjacencies = AdjacencySerializer(many=True, read_only=True)
+    # Economic data
+    economic_data = EconomicDataSerializer(many=True, read_only=True, required=False)
+    # Voting results data
+    election_result_data = ElectionResultSerializer(many=True, read_only=True, required=False)
+    # Demographic data
+    demographic_data = DemographicSerializer(many=True, read_only=True, required=False)
 
 class PrecinctSerializer(serializers.ModelSerializer):
     adjacencies = AdjacencySerializer(many=True, read_only=True)
@@ -61,15 +67,14 @@ class EconomicDataSerializer(serializers.ModelSerializer):
     # gdp_per_capita = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # median_income = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # year = serializers.DateField()
-    # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
-    precinct = PrecinctSerializer(many = True, read_only=True)
+    precinct = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = EconomicData
         fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
 
 
-class PoliticalPartySerializer(serializers.NodelSerializer):
+class PoliticalPartySerializer(serializers.ModelSerializer):
     # description = serializers.CharField(max_length=100)
     class Meta:
         model = PoliticalParty
@@ -79,19 +84,19 @@ class PoliticalPartySerializer(serializers.NodelSerializer):
 class ElectionResultSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # votes = serializers.ManyToManyField(PoliticalParty, through='VoteCount')
-    precinct = PrecinctSerializer(read_only=True)
-    votes = PoliticalPartySerializer(many=True, read_only=True)
+    precinct = serializers.PrimaryKeyRelatedField(read_only=True)
+    votes = VoteCountSerializer(source='vote_counts', many=True, read_only=True)
 
     class Meta:
         model = ElectionResult
-        fields = ('election_year', 'precinct', 'votes')
+        fields = ('election_year', 'precinct',)
 
 class VoteCountSerializer(serializers.ModelSerializer):
-    election_result = ElectionResultSerializer(read_only=True)
+    # election_result = ElectionResultSerializer(read_only=True)
     political_party = PoliticalPartySerializer(read_only=True)
     class Meta:
         model = VoteCount
-        fields = ('election_result', 'political_party', 'num_votes')
+        fields = ('political_party', 'num_votes')
 
 
 class DistrictSerializer(serializers.ModelSerializer):

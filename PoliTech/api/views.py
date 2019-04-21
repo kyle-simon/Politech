@@ -36,25 +36,44 @@ class DistrictViewSet(viewsets.ModelViewSet):
     serializer_class = DistrictSerializer
 
     @action(detail=True, methods=['GET'])
-    def state(self, request, state, year=date.today()):
+    def state(self, request, state, year=date.today(), include_economic_data=False,
+             include_election_result_data=False, include_demographic_data=False):
         districts_in_state = District.objects.filter(Q(state=state) 
                                                     & Q(precincts__DistrictMembership__from_year__gte=year) 
                                                     & (Q(precincts__DistrictMembership__to_year__lt=year) | Q(precincts__DistrictMembership__to_year__isnull=True)))
 
-        precincts_in_district = districts_in_state.values('precincts')
+        precincts_in_district = list(districts_in_state.values('precincts'))
 
         # Only grab precinct where from_precinct < to_precinct, this will make it so we don't grab reverse relationships
         adjacencies_in_district = Adjacency.objects.filter((Q(from_precinct__in=precincts_in_district) | Q(to_precinct__in=precincts_in_district)) 
                                                            & Q(from_precinct__pk__lt=F('to_precinct')))
 
-        state = State(state, districts_in_state, adjacencies_in_state)
+        economic_data = None
+        election_result_data = None
+        demographic_data = None
+
+        if include_economic_data:
+            # grab economic data from the most recent year
+
+            economic_data = EconomicData.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
+                                                .order_by('pk', '-year') \
+                                                .distinct('pk')
+        if include_election_result_data:
+            election_result_data = ElectionResult.objects.filter(Q(precinct__in=precincts_in_district) & Q(election_year__lte=year)) \
+                                                         .order_by('pk', '-election_year') \
+                                                         .distinct('pk')
+        if include_demographic_data:
+            demographic_data = Demographic.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
+                                                  .order_by('pk', '-year') \
+                                                  .distinct('pk')
+
+        state = State(state, districts_in_state, adjacencies_in_state, economic_data, demographic_data, election_result_data)
 
         serializer = StateSerializer(state)
 
         return JsonResponse(serializer.data)
 
 
-        # need to write serializer
 
 # class DistrictCreateView(generics.ListCreateAPIView):
 #     queryset = District.objects.all()

@@ -95,7 +95,7 @@ class PoliticalParty(models.Model):
 class ElectionResult(models.Model):
     election_year = models.DateField()
     precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT)
-    votes = models.ManyToManyField(PoliticalParty, through='VoteCount')
+    votes = models.ManyToManyField(PoliticalParty, through='VoteCount', related_name='vote_counts')
 
     class Meta:
         index_together = [
@@ -127,7 +127,10 @@ class DistrictMembership(models.Model):
         ]
 
 class State(object):
-    def __init__(self, state, districts, adjacencies):
+    def __init__(self, state, districts, adjacencies, economic_data=None, demographic_data=None, election_result_data=None):
         self.state = state
         self.districts = districts
         self.adjacencies = adjacencies
+        self.economic_data = economic_data
+        self.demographic_data = demographic_data
+        self.election_result_data = election_result_data
