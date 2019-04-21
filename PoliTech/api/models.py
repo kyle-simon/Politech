@@ -1,5 +1,9 @@
 from django.db import models as models
 from django.contrib.gis.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 
 # Create your models here.
@@ -134,3 +138,10 @@ class State(object):
         self.economic_data = economic_data
         self.demographic_data = demographic_data
         self.election_result_data = election_result_data
+
+# For the admin panel
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+        print(post_save)
