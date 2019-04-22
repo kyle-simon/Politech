@@ -24,44 +24,35 @@ class AdjacencySerializer(BulkSerializerMixin,serializers.ModelSerializer):
         list_serializer_class = BulkListSerializer
         fields = ('from_precinct', 'to_precinct', 'adjacency_types')
 
-class StateSerializer(serializers.Serializer):
-    state = serializers.ChoiceField(choices=STATES, read_only=True)
-    districts = DistrictSerializer(many=True, read_only=True)
-    adjacencies = AdjacencySerializer(many=True, read_only=True)
-    # Economic data
-    economic_data = EconomicDataSerializer(many=True, read_only=True, required=False)
-    # Voting results data
-    election_result_data = ElectionResultSerializer(many=True, read_only=True, required=False)
-    # Demographic data
-    demographic_data = DemographicSerializer(many=True, read_only=True, required=False)
 
-class PrecinctSerializer(BulkListSerializer, serializers.ModelSerializer):
+
+class PrecinctSerializer(serializers.ModelSerializer):
     adjacencies = AdjacencySerializer(many=True, read_only=True)
 
     class Meta:
         model = Precinct
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('precinct_shape', 'state', 'description', 'adjacencies')
 
 
-class DemographicTypeSerializer(BulkListSerializer, serializers.ModelSerializer):
+class DemographicTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DemographicType
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('description')
 
 
-class DemographicSerializer(BulkListSerializer, serializers.ModelSerializer):
+class DemographicSerializer(serializers.ModelSerializer):
     precinct = serializers.PrimaryKeyRelatedField(read_only=True)
     demographic_types = DemographicTypeSerializer(many = True, read_only=True)
 
     class Meta:
         model = Demographic
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('contains_representative', 'year', 'total_population', 'precinct', 'demographic_types')
 
 
-class DemographicTypePopulationSerializer(BulkListSerializer, serializers.ModelSerializer):
+class DemographicTypePopulationSerializer(serializers.ModelSerializer):
     # demographic = serializers.ForeignKey(Demographic, on_delete=models.PROTECT)
     demographic = serializers.PrimaryKeyRelatedField(read_only = True)
     # demographic_type = serializers.ForeignKey(DemographicType, on_delete=models.PROTECT)
@@ -70,11 +61,11 @@ class DemographicTypePopulationSerializer(BulkListSerializer, serializers.ModelS
 
     class Meta:
         model = DemographicTypePopulation
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('demographic', 'demographic_type', 'population')
 
 
-class EconomicDataSerializer(BulkListSerializer, serializers.ModelSerializer):
+class EconomicDataSerializer(serializers.ModelSerializer):
     # gdp_per_capita = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # median_income = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # year = serializers.DateField()
@@ -82,7 +73,7 @@ class EconomicDataSerializer(BulkListSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = EconomicData
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
 
 
@@ -92,6 +83,12 @@ class PoliticalPartySerializer(serializers.ModelSerializer):
         model = PoliticalParty
         fields = ('description')
 
+class VoteCountSerializer(serializers.ModelSerializer):
+    # election_result = ElectionResultSerializer(read_only=True)
+    political_party = PoliticalPartySerializer(read_only=True)
+    class Meta:
+        model = VoteCount
+        fields = ('political_party', 'num_votes')
 
 class ElectionResultSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
@@ -103,25 +100,20 @@ class ElectionResultSerializer(serializers.ModelSerializer):
         model = ElectionResult
         fields = ('election_year', 'precinct',)
 
-class VoteCountSerializer(serializers.ModelSerializer):
-    # election_result = ElectionResultSerializer(read_only=True)
-    political_party = PoliticalPartySerializer(read_only=True)
-    class Meta:
-        model = VoteCount
-        fields = ('political_party', 'num_votes')
 
 
-class DistrictSerializer(BulkListSerializer, serializers.ModelSerializer):
+
+class DistrictSerializer(serializers.ModelSerializer):
     precincts = PrecinctSerializer(many=True)
     state = serializers.ChoiceField(choices=STATES)
 
     class Meta:
         model = District
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('state','description','precincts')
 
 
-class DistrictMembershipSerializer(BulkListSerializer, serializers.ModelSerializer):
+class DistrictMembershipSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # district = serializers.ForeignKey(District, on_delete=models.PROTECT)
     # from_year = serializers.DateField()
@@ -130,7 +122,7 @@ class DistrictMembershipSerializer(BulkListSerializer, serializers.ModelSerializ
     district = DistrictSerializer(read_only=True)
     class Meta:
         model = DistrictMembership
-        list_serializer_class = BulkListSerializer
+        # list_serializer_class = BulkListSerializer
         fields = ('precinct', 'district', 'from_year', 'to_year')
 
 # serializers for admin panel
@@ -143,3 +135,14 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = ('url', 'name')
+
+class StateSerializer(serializers.Serializer):
+    state = serializers.ChoiceField(choices=STATES, read_only=True)
+    districts = DistrictSerializer(many=True, read_only=True)
+    adjacencies = AdjacencySerializer(many=True, read_only=True)
+    # Economic data
+    economic_data = EconomicDataSerializer(many=True, read_only=True, required=False)
+    # Voting results data
+    election_result_data = ElectionResultSerializer(many=True, read_only=True, required=False)
+    # Demographic data
+    demographic_data = DemographicSerializer(many=True, read_only=True, required=False)
