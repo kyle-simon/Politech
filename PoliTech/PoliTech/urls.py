@@ -15,7 +15,7 @@ from rest_framework import routers
 from django.contrib import admin
 admin.autodiscover()
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 
 router.register(r'economic-data', user_views.EconomicViewSet)
 router.register(r'vote-count', user_views.VoteCountViewSet)
