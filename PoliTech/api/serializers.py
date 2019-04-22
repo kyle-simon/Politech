@@ -4,24 +4,17 @@ from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
 from .models import *
 from .constants import STATES
-from rest_framework_bulk import (
-    BulkListSerializer,
-    BulkSerializerMixin,
-    ListBulkCreateUpdateDestroyAPIView,
-)
 
-class AdjacencyTypeSerializer(BulkSerializerMixin, serializers.ModelSerializer):
+class AdjacencyTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdjacencyType
-        list_serializer_class = BulkListSerializer
         fields = ('description')
 
 
-class AdjacencySerializer(BulkSerializerMixin,serializers.ModelSerializer):
+class AdjacencySerializer(serializers.ModelSerializer):
     adjacency_types = AdjacencyTypeSerializer(many=True, read_only=True)
     class Meta:
         model = Adjacency
-        list_serializer_class = BulkListSerializer
         fields = ('from_precinct', 'to_precinct', 'adjacency_types')
 
 
@@ -31,14 +24,12 @@ class PrecinctSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Precinct
-        # list_serializer_class = BulkListSerializer
         fields = ('precinct_shape', 'state', 'description', 'adjacencies')
 
 
 class DemographicTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DemographicType
-        # list_serializer_class = BulkListSerializer
         fields = ('description')
 
 
@@ -48,7 +39,6 @@ class DemographicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Demographic
-        # list_serializer_class = BulkListSerializer
         fields = ('contains_representative', 'year', 'total_population', 'precinct', 'demographic_types')
 
 
@@ -61,7 +51,6 @@ class DemographicTypePopulationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DemographicTypePopulation
-        # list_serializer_class = BulkListSerializer
         fields = ('demographic', 'demographic_type', 'population')
 
 

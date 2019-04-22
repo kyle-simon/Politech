@@ -18,12 +18,6 @@ from rest_framework.status import (
 )
 from rest_framework.response import Response
 
-from rest_framework_bulk import (
-    BulkListSerializer,
-    BulkSerializerMixin,
-    ListBulkCreateUpdateDestroyAPIView,
-)
-
 from .constants import STATES
 
 # @api_view()
@@ -66,11 +60,25 @@ class AdjacencyTypeViewSet(viewsets.ModelViewSet):
     queryset = AdjacencyType.objects.all()
     serializer_class = AdjacencyTypeSerializer
 
+class PrecinctViewSet(viewsets.ModelViewSet):
+    queryset = Precinct.objects.all()
+    serializer_class = PrecinctSerializer
+
+    @action(detail=False, methods=['POST'])
+    def bulk_create(self, request):
+        serializer=PrecinctSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            new_precincts = serializer.save()
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]
+            return Response(data=list(new_precincts.map(lambda p: (p.pk, p.description))), status=HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=False, methods=['GET'])
     def state(self, request, state, year=date.today(), include_economic_data=False,
              include_election_result_data=False, include_demographic_data=False):
         districts_in_state = District.objects.filter(Q(state=state) 
@@ -110,61 +118,6 @@ class DistrictViewSet(viewsets.ModelViewSet):
 
 
 
-# class DistrictCreateView(generics.ListCreateAPIView):
-#     queryset = District.objects.all()
-#     serializer_class = DistrictSerializer
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = DistrictSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = DistrictSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class AdjacencyTypeCreateView(generics.ListCreateAPIView):
-#     queryset = AdjacencyType.objects.all()
-#     serializer_class = AdjacencyType
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = AdjacencyTypeSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = AdjacencyTypeSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class DemographicTypeCreateView(generics.ListCreateAPIView):
-#     queryset = DemographicType.objects.all()
-#     serializer_class = DemographicType
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = DemographicTypeSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = DemographicTypeSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class DemographicCreateView(generics.ListCreateAPIView):
-#     queryset = Demographic.objects.all()
-#     serializer_class = Demographic
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = DemographicSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = DemographicSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class AdjacencyCreateView(generics.ListCreateAPIView):
-#     queryset = Adjacency.objects.all()
-#     serializer_class = Adjacency
-#
-#     def create(self, request, *args, **kwargs):
-#         write_serializer = AdjacencySerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = AdjacencySerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
 class PrecinctCreateView(generics.ListCreateAPIView):
     queryset = Precinct.objects.all()
     serializer_class = Precinct
@@ -177,60 +130,3 @@ class PrecinctCreateView(generics.ListCreateAPIView):
 
 
 
-
-
-#
-# class districtCreateView(generics.ListCreateAPIVIEW):
-#     queryset = District.objects.all()
-#     serializer_class = DistrictSerializer
-#
-#     def create(self, request):
-#         write_serializer = DistrictSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = DistrictSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class DemographicTypePopulationCreateView(generics.ListCreateAPIVIEW):
-#     queryset = DemographicTypePopulation.objects.all()
-#     serializer_class = DemographicTypePopulationSerializer
-#
-#     def create(self, request):
-#         write_serializer = DemographicTypePopulationSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = DemographicTypePopulationSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class PoliticalPartyCreateView(generics.ListCreateAPIVIEW):
-#     queryset = PoliticalParty.objects.all()
-#     serializer_class = PoliticalPartySerializer
-#
-#     def create(self, request):
-#         write_serializer = PoliticalPartySerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = PoliticalPartySerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class ElectionResultCreateView(generics.ListCreateAPIVIEW):
-#     queryset = ElectionResult.objects.all()
-#     serializer_class = ElectionResultSerializer
-#
-#     def create(self, request):
-#         write_serializer = ElectionResultSerializer(data=request.data)
-#         write_serializer.is_valid(raise_exception=True)
-#         instance = self.perform_create(write_serializer)
-#         read_serializer = ElectionResultSerializer(instance)
-#         return JsonResponse(read_serializer.data)
-#
-# class DistrictMembershipCreateView(generics.ListCreateAPIVIEW):
-#         queryset = DistrictMembership.objects.all()
-#         serializer_class = DistrictMembershipSerializer
-#
-#         def create(self, request):
-#             write_serializer = DistrictMembershipSerializer(data=request.data)
-#             write_serializer.is_valid(raise_exception=True)
-#             instance = self.perform_create(write_serializer)
-#             read_serializer = DistrictMembershipSerializer(instance)
-#             return JsonResponse(read_serializer.data)
