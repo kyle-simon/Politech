@@ -78,9 +78,42 @@ class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
 
-    @action(detail=False, methods=['GET'])
-    def state(self, request, state, year=date.today(), include_economic_data=False,
-             include_election_result_data=False, include_demographic_data=False):
+    @action(detail=False, methods=['GET'], url_path='state/')
+    def state(self, request):
+        state = None
+        year = date.today()
+        include_economic_data = None
+        include_election_result_data = None
+        include_demographic_data = None
+
+        if 'state' not in request.query_params:
+            return Response(status=HTTP_400_BAD_REQUEST)
+        state = request.query_params['state']
+
+        if state not in STATES:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+        if 'year' in request.query_params:
+            try:
+                year = date.fromisoformat(request.query_params['year'])
+            except:
+                return Response(status=HTTP_400_BAD_REQUEST)
+
+        if 'include_economic_data' in request.query_params:
+            if request.query_params['include_economic_data'] not in ('True', 'False'):
+                return Response(status=HTTP_400_BAD_REQUEST)
+            include_economic_data = request.query_params['include_economic_data'] == 'True'
+
+        if 'include_demographic_data' in request.query_params:
+            if request.query_params['include_demographic_data'] not in ('True', 'False'):
+                return Response(status=HTTP_400_BAD_REQUEST)
+            include_demographic_data =request.query_params['include_demographic_data'] == 'True'
+
+        if 'include_election_result_data' in request.query_params:
+            if request.query_params['include_election_result_data'] not in ('True', 'False'):
+                return Response(status=HTTP_400_BAD_REQUEST)
+            include_election_result_data = request.query_params['include_election_result_data'] == 'True'
+
         districts_in_state = District.objects.filter(Q(state=state) 
                                                     & Q(precincts__DistrictMembership__from_year__gte=year) 
                                                     & (Q(precincts__DistrictMembership__to_year__lt=year) | Q(precincts__DistrictMembership__to_year__isnull=True)))
@@ -115,18 +148,3 @@ class DistrictViewSet(viewsets.ModelViewSet):
         serializer = StateSerializer(state)
 
         return JsonResponse(serializer.data)
-
-
-
-class PrecinctCreateView(generics.ListCreateAPIView):
-    queryset = Precinct.objects.all()
-    serializer_class = Precinct
-
-    def create(self, request, *args, **kwargs):
-        write_serializer = PrecinctSerializer(data=request.data)
-        write_serializer.is_valid(raise_exception=True)
-        instance = self.perform_create(write_serializer)
-        read_serializer = PrecinctSerializer(instance)
-
-
-

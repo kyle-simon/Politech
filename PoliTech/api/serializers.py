@@ -8,14 +8,14 @@ from .constants import STATES
 class AdjacencyTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdjacencyType
-        fields = ('description')
+        fields = ['description']
 
 
 class AdjacencySerializer(serializers.ModelSerializer):
     adjacency_types = AdjacencyTypeSerializer(many=True, read_only=True)
     class Meta:
         model = Adjacency
-        fields = ('from_precinct', 'to_precinct', 'adjacency_types')
+        fields = ['from_precinct', 'to_precinct', 'adjacency_types']
 
 
 
@@ -24,13 +24,13 @@ class PrecinctSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Precinct
-        fields = ('precinct_shape', 'state', 'description', 'adjacencies')
+        fields = ['precinct_shape', 'state', 'description', 'adjacencies']
 
 
 class DemographicTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DemographicType
-        fields = ('description')
+        fields = ['description']
 
 
 class DemographicSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class DemographicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Demographic
-        fields = ('contains_representative', 'year', 'total_population', 'precinct', 'demographic_types')
+        fields = ['contains_representative', 'year', 'total_population', 'precinct', 'demographic_types']
 
 
 class DemographicTypePopulationSerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class DemographicTypePopulationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DemographicTypePopulation
-        fields = ('demographic', 'demographic_type', 'population')
+        fields = ['demographic', 'demographic_type', 'population']
 
 
 class EconomicDataSerializer(serializers.ModelSerializer):
@@ -63,21 +63,21 @@ class EconomicDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = EconomicData
         # list_serializer_class = BulkListSerializer
-        fields = ('gdp_per_capita', 'median_income', 'year', 'precinct')
+        fields = ['gdp_per_capita', 'median_income', 'year', 'precinct']
 
 
 class PoliticalPartySerializer(serializers.ModelSerializer):
     # description = serializers.CharField(max_length=100)
     class Meta:
         model = PoliticalParty
-        fields = ('description')
+        fields = ['description']
 
 class VoteCountSerializer(serializers.ModelSerializer):
     # election_result = ElectionResultSerializer(read_only=True)
     political_party = PoliticalPartySerializer(read_only=True)
     class Meta:
         model = VoteCount
-        fields = ('political_party', 'num_votes')
+        fields = ['political_party', 'num_votes']
 
 class ElectionResultSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
@@ -87,7 +87,7 @@ class ElectionResultSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ElectionResult
-        fields = ('election_year', 'precinct',)
+        fields = ['election_year', 'precinct',]
 
 
 
@@ -99,7 +99,7 @@ class DistrictSerializer(serializers.ModelSerializer):
     class Meta:
         model = District
         # list_serializer_class = BulkListSerializer
-        fields = ('state','description','precincts')
+        fields = ['state','description','precincts']
 
 
 class DistrictMembershipSerializer(serializers.ModelSerializer):
@@ -112,18 +112,18 @@ class DistrictMembershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = DistrictMembership
         # list_serializer_class = BulkListSerializer
-        fields = ('precinct', 'district', 'from_year', 'to_year')
+        fields = ['precinct', 'district', 'from_year', 'to_year']
 
 # serializers for admin panel
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = ['url', 'username', 'email', 'groups']
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
-        fields = ('url', 'name')
+        fields = ['url', 'name']
 
 class StateSerializer(serializers.Serializer):
     state = serializers.ChoiceField(choices=STATES, read_only=True)
@@ -135,3 +135,4 @@ class StateSerializer(serializers.Serializer):
     election_result_data = ElectionResultSerializer(many=True, read_only=True, required=False)
     # Demographic data
     demographic_data = DemographicSerializer(many=True, read_only=True, required=False)
+
