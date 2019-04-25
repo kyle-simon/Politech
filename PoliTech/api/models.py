@@ -65,7 +65,7 @@ class Demographic(models.Model):
     contains_representative = models.BooleanField(null=True, blank=True)
     year = models.DateField()
     total_population = models.IntegerField(null=True, blank=True)
-    precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT)
+    precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT, related_name='demographics')
     demographic_types = models.ManyToManyField(DemographicType, through='DemographicTypePopulation')
 
     class Meta:
@@ -89,7 +89,7 @@ class EconomicData(models.Model):
     gdp_per_capita = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     median_income = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     year = models.DateField()
-    precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT)
+    precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT, related_name='economics')
 
 
 class PoliticalParty(models.Model):

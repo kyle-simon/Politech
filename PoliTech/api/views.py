@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from .models import *
 from .serializers import *
 from datetime import date
-from django.db.models import Q, F
+from django.db.models import Q, F, Max, OuterRef, Subquery
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.models import Token
@@ -130,18 +130,18 @@ class DistrictViewSet(viewsets.ModelViewSet):
 
         if include_economic_data:
             # grab economic data from the most recent year
+            economic_data = EconomicData.objects.filter(Q(precinct__in=precinct_in_district) & Q(year__lte=year)) \
+                                                .annotate(_sel=Max('precinct__economics__year')) \
+                                                .filter(year=F('_sel'))
 
-            economic_data = EconomicData.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
-                                                .order_by('pk', '-year') \
-                                                .distinct('pk')
         if include_election_result_data:
             election_result_data = ElectionResult.objects.filter(Q(precinct__in=precincts_in_district) & Q(election_year__lte=year)) \
-                                                         .order_by('pk', '-election_year') \
-                                                         .distinct('pk')
+                                                         .annotate(_sel=Max('precinct__vote_counts__election_year')) \
+                                                         .filter(election_year='sel')
         if include_demographic_data:
             demographic_data = Demographic.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
-                                                  .order_by('pk', '-year') \
-                                                  .distinct('pk')
+                                                  .annotate(_sel= Max('precinct__demographics__year')) \
+                                                  .filter(year=F('_sel'))
 
         state = State(state, districts_in_state, adjacencies_in_state, economic_data, demographic_data, election_result_data)
 
