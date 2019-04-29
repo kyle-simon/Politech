@@ -55,6 +55,16 @@ class VoteCountViewSet(viewsets.ModelViewSet):
 class AdjacencyViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Adjacency.objects.all()
     serializer_class = AdjacencySerializer
+    @action(detail=False, methods=['POST'])
+    def bulk_create(self, request):
+        print(request.data)
+        serializer=AdjacencySerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            new_precincts = serializer.save()
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]
+            return Response(data=list(new_precincts.map(lambda p: (p.pk, p.description))), status=HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 class AdjacencyTypeViewSet(viewsets.ModelViewSet):
     queryset = AdjacencyType.objects.all()
@@ -70,7 +80,9 @@ class PrecinctViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             new_precincts = serializer.save()
             # return a list of tuples that looks like [(pk, description), (pk, description),..]
-            return Response(data=list(new_precincts.map(lambda p: (p.pk, p.description))), status=HTTP_200_OK)
+            res=map(lambda p: (p.pk, p.description), new_precincts)
+            print(res)
+            return Response(data=res, status=HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
@@ -130,7 +142,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
 
         if include_economic_data:
             # grab economic data from the most recent year
-            economic_data = EconomicData.objects.filter(Q(precinct__in=precinct_in_district) & Q(year__lte=year)) \
+            economic_data = EconomicData.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
                                                 .annotate(_sel=Max('precinct__economics__year')) \
                                                 .filter(year=F('_sel'))
 
