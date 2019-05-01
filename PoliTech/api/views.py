@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, viewsets
@@ -57,12 +59,28 @@ class AdjacencyViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AdjacencySerializer
     @action(detail=False, methods=['POST'])
     def bulk_create(self, request):
-        print(request.data)
         serializer=AdjacencySerializer(data=request.data, many=True)
+        print(request.data)
         if serializer.is_valid():
-            new_precincts = serializer.save()
-            # return a list of tuples that looks like [(pk, description), (pk, description),..]
-            return Response(data=list(new_precincts.map(lambda p: (p.pk, p.description))), status=HTTP_200_OK)
+            # new_adjacencies = serializer.create(validated_data=request.data)
+            i = 0
+            res = {}
+            for elem in request.data:
+                from_pre = Precinct.objects.get(id=elem["from_precinct"])
+                to_pre = Precinct.objects.get(id=elem["to_precinct"])
+                data = from_pre.add_adjacency(to_pre)
+                res[i] = data
+                i = i + 1
+                # data={"from_precinct":from_pre, "to_precinct":to_pre}
+
+                # print(type(data))
+                # adj = serializer.create(validated_data=data)
+            print(res)
+            # print(json.dumps(request.data, indent=4))
+            serializer.save()
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]\
+            # list(new_precincts.map(lambda p: (p.pk, p.description)))
+            return Response(data="", status=HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 

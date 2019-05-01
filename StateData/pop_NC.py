@@ -17,19 +17,19 @@ def getNeighborJSON(inds, precs):
     return to_return
 
 
-filename = "NC"
+filename = "test"
 statename = "North Carolina"
 
 # Get centers and neighbors
-w = ps.lib.weights.Queen.from_shapefile(filename+".shp")
+w = ps.lib.weights.Queen.from_shapefile("Data/"+filename+"/"+filename+".shp")
 n = w.neighbors
 
-f = ps.lib.io.open(filename + ".shp")
+f = ps.lib.io.open("Data/"+filename+"/"+filename+".shp")
 p = f.read()
 
 
 # Populate the DB
-with open(filename + ".json") as json_file:
+with open("Data/"+filename+"/"+filename + ".json") as json_file:
     json_data = json.load(json_file)
     features = json_data["features"]
     precincts = {}  # Maps index to name

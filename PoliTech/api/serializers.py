@@ -20,7 +20,7 @@ class AdjacencySerializer(serializers.ModelSerializer):
 
 
 class PrecinctSerializer(serializers.ModelSerializer):
-    adjacencies = AdjacencySerializer(many=True, read_only=True)
+    adjacencies = AdjacencySerializer(many=True, read_only=True, source='to_precincts')
 
     class Meta:
         model = Precinct
