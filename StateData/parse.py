@@ -7,7 +7,11 @@ def json_read(filename):
         data = json.load(f_in)
 
         for elem in data["features"]:
-            elem["geometry"]["type"] = "MultiPolygon"
+            coordinates = elem["geometry"]["coordinates"]
+            elem["precinct_shape"] = elem.pop("geometry")
+            elem["precinct_shape"]["type"] = "MultiPolygon"
+            elem["precinct_shape"]["type"] = "MultiPolygon"
+            elem["precinct_shape"]["coordinates"] = [coordinates]
             state = elem["properties"]["STATEFP10"]
             description = elem["properties"]["NAMELSAD10"]
             del elem["properties"]
@@ -17,7 +21,7 @@ def json_read(filename):
 
 def json_write(dict, filename):
     with open(filename,'w+') as f_out:
-        f_out.write(json.dumps(dict, indent=4))
+        f_out.write(json.dumps(dict["features"], indent=4))
 
 if (len(sys.argv) != 3):
     sys.exit(0)
