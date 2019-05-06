@@ -167,7 +167,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
         if include_election_result_data:
             election_result_data = ElectionResult.objects.filter(Q(precinct__in=precincts_in_district) & Q(election_year__lte=year)) \
                                                          .annotate(_sel=Max('precinct__vote_counts__election_year')) \
-                                                         .filter(election_year='sel')
+                                                         .filter(election_year='_sel')
         if include_demographic_data:
             demographic_data = Demographic.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
                                                   .annotate(_sel= Max('precinct__demographics__year')) \
