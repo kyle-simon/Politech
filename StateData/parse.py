@@ -9,14 +9,17 @@ def json_read(filename):
         for elem in data["features"]:
             coordinates = elem["geometry"]["coordinates"]
             elem["precinct_shape"] = elem.pop("geometry")
-            elem["precinct_shape"]["type"] = "MultiPolygon"
-            elem["precinct_shape"]["type"] = "MultiPolygon"
-            elem["precinct_shape"]["coordinates"] = [coordinates]
+            if elem["precinct_shape"]["type"] == "MultiPolygon":
+                elem["precinct_shape"]["coordinates"] = coordinates
+            else:
+                elem["precinct_shape"]["type"] = "MultiPolygon"
+                elem["precinct_shape"]["coordinates"] = [coordinates]
             state = elem["properties"]["STATEFP10"]
             description = elem["properties"]["NAMELSAD10"]
             del elem["properties"]
             elem["state"] = state
             elem["description"] = description
+            del elem["type"]
         return(data)
 
 def json_write(dict, filename):
@@ -31,51 +34,3 @@ if __name__ == "__main__":
     my_data = json_read(sys.argv[1])
     json_write(my_data, sys.argv[2])
     print("Done")
-    # print(json.dumps(my_data["features"][0], indent=4))
-
-
-
-# {
-#     "precinct_shape": {
-#             "type": "Feature",
-#             "geometry": {
-#                 "type": "MultiPolygon",
-#                 "coordinates": [
-#                     [
-#                         [
-#                             [
-#                                 -77.042158,
-#                                 36.239931
-#                             ],
-#                             [
-#                                 -76.963054,
-#                                 36.215963
-#                             ],
-#                             [
-#                                 -76.96133,
-#                                 36.212988
-#                             ],
-#                             [
-#                                 -76.958024,
-#                                 36.209898
-#                             ],
-#                             [
-#                                 -76.950832,
-#                                 36.200791
-#                             ],
-#                             [
-#                                 -77.042158,
-#                                 36.239931
-#                             ]
-#                         ]
-#                     ]
-#             ]
-#         }
-#     },
-#     "state": "37",
-#     "description": "Voting District M1"
-# }
-
-
-# 'MultiPolygon(((-77.042158 36.239931, -76.963054 36.215963, -76.96133 36.212988, -76.958024 36.209898,-76.950832 36.200791,-77.042158 36.239931)))';
-# insert into `api_precinct`(precinct_shape, state, description) VALUES (ST_GeomFromText(@g), "NY", "test");
