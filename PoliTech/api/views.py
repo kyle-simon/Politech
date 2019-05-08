@@ -157,6 +157,8 @@ class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
 
+
+
     @action(detail=False, methods=['GET'], url_path='state/')
     def state(self, request):
         state = None

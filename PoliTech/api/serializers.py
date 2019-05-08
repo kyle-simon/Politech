@@ -83,7 +83,7 @@ class VoteCountSerializer(serializers.ModelSerializer):
 class ElectionResultSerializer(serializers.ModelSerializer):
     # precinct = serializers.ForeignKey(Precinct, on_delete=models.PROTECT)
     # votes = serializers.ManyToManyField(PoliticalParty, through='VoteCount')
-    precinct = serializers.PrimaryKeyRelatedField(read_only=True)
+    precinct = serializers.PrimaryKeyRelatedField()
     votes = VoteCountSerializer(source='vote_counts', many=True, read_only=True)
 
     class Meta:
@@ -101,6 +101,9 @@ class DistrictSerializer(serializers.ModelSerializer):
         model = District
         # list_serializer_class = BulkListSerializer
         fields = ['state','description','precincts']
+
+class DistrictWriteSerializer(DistrictSerializer):
+    precincts = serializers.PrimaryKeyRelatedField(many=True)
 
 
 class DistrictMembershipSerializer(serializers.ModelSerializer):
