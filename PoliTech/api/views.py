@@ -1,9 +1,12 @@
 import json
 
+from datetime import datetime
 from django.http import JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
+from rest_framework.parsers import FileUploadParser, JSONParser
+
 from .models import *
 from .serializers import *
 from datetime import date
@@ -49,10 +52,40 @@ class EconomicViewSet(viewsets.ModelViewSet):
     queryset = EconomicData.objects.all()
     serializer_class = EconomicDataSerializer
 
+    @action(detail=False, methods=['POST'])
+    def bulk_create(self, request):
+        # print(request.data)
+        # for elem in request.data:
+        #     y = elem["year"]
+        #     elem["year"] = date(year=y, month=1, day=1)
+        print(request.data)
+        serializer=EconomicDataSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            new_economic_data = serializer.save()
+
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]
+            # res=map(lambda p: (p.pk, p.precinct), new_economic_data)
+            # print(res)
+            return Response(data="", status=HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 
 class VoteCountViewSet(viewsets.ModelViewSet):
     queryset = VoteCount.objects.all()
     serializer_class = VoteCountSerializer
+
+    @action(detail=False, methods=['POST'])
+    def bulk_create(self, request):
+        serializer=VoteCountSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            new_precincts = serializer.save()
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]
+            # res=map(lambda p: (p.pk, p.description), new_precincts)
+            # print(res)
+            return Response(data="Done", status=HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class AdjacencyViewSet(viewsets.ReadOnlyModelViewSet):
@@ -72,16 +105,10 @@ class AdjacencyViewSet(viewsets.ReadOnlyModelViewSet):
                 data = from_pre.add_adjacency(to_pre)
                 res[i] = data
                 i = i + 1
-                # data={"from_precinct":from_pre, "to_precinct":to_pre}
-
-                # print(type(data))
-                # adj = serializer.create(validated_data=data)
-            print(res)
-            # print(json.dumps(request.data, indent=4))
             serializer.save()
             # return a list of tuples that looks like [(pk, description), (pk, description),..]\
             # list(new_precincts.map(lambda p: (p.pk, p.description)))
-            return Response(data="", status=HTTP_200_OK)
+            return Response(data=res, status=HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
@@ -89,7 +116,27 @@ class AdjacencyTypeViewSet(viewsets.ModelViewSet):
     queryset = AdjacencyType.objects.all()
     serializer_class = AdjacencyTypeSerializer
 
+    @action(detail=False, methods=['POST'])
+    def bulk_create(self, request):
+        # print(request.data)
+        # for elem in request.data:
+        #     y = elem["year"]
+        #     elem["year"] = date(year=y, month=1, day=1)
+        print(request.data)
+        serializer=AdjacencyTypeSerializer(data=request.data, many=True)
+        if serializer.is_valid():
+            new_economic_data = serializer.save()
+
+            # return a list of tuples that looks like [(pk, description), (pk, description),..]
+            # res=map(lambda p: (p.pk, p.precinct), new_economic_data)
+            # print(res)
+            return Response(data="", status=HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+
 class PrecinctViewSet(viewsets.ModelViewSet):
+    parser_classes = (JSONParser, FileUploadParser)
     queryset = Precinct.objects.all()
     serializer_class = PrecinctSerializer
 
@@ -104,6 +151,7 @@ class PrecinctViewSet(viewsets.ModelViewSet):
             return Response(data=res, status=HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
 
 class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()

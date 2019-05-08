@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, fields
 from django.contrib.auth.models import User, Group
 from django.contrib.gis.db import models
 from rest_framework_gis.fields import GeometryField
@@ -58,7 +58,7 @@ class DemographicTypePopulationSerializer(serializers.ModelSerializer):
 class EconomicDataSerializer(serializers.ModelSerializer):
     # gdp_per_capita = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     # median_income = serializers.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    # year = serializers.DateField()
+    year = fields.DateField(input_formats=['%Y','iso-8601'])
     precinct = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:

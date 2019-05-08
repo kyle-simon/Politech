@@ -88,7 +88,7 @@ class DemographicTypePopulation(models.Model):
 class EconomicData(models.Model):
     gdp_per_capita = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
     median_income = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
-    year = models.DateField()
+    year = models.IntegerField()
     precinct = models.ForeignKey(Precinct, on_delete=models.PROTECT, related_name='economics')
 
 
