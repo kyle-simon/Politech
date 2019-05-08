@@ -19,7 +19,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
-    HTTP_200_OK
+    HTTP_200_OK,
+    HTTP_401_UNAUTHORIZED
 )
 from rest_framework.response import Response
 
@@ -41,7 +42,7 @@ def login(request):
     user = authenticate(username=username, password=password)
     if not user:
         return Response({'error': 'Invalid Credentials'},
-                        status=HTTP_404_NOT_FOUND)
+                        status=HTTP_401_UNAUTHORIZED)
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key},
                     status=HTTP_200_OK)
@@ -215,7 +216,7 @@ class DistrictViewSet(viewsets.ModelViewSet):
         if include_election_result_data:
             election_result_data = ElectionResult.objects.filter(Q(precinct__in=precincts_in_district) & Q(election_year__lte=year)) \
                                                          .annotate(_sel=Max('precinct__vote_counts__election_year')) \
-                                                         .filter(election_year='sel')
+                                                         .filter(election_year='_sel')
         if include_demographic_data:
             demographic_data = Demographic.objects.filter(Q(precinct__in=precincts_in_district) & Q(year__lte=year)) \
                                                   .annotate(_sel= Max('precinct__demographics__year')) \
