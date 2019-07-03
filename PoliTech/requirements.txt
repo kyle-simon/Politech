@@ -1,7 +1,7 @@
 astroid==2.2.5
 colorama==0.4.1
 cycler==0.10.0
-Django==2.2
+Django==2.2.3
 djangorestframework==3.9.2
 djangorestframework-gis==0.14
 dj-database-url==0.5.0
